@@ -60,7 +60,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <Link to="/feed" className="mb-6 px-2"><Logo className="hidden text-2xl xl:inline" /><span className="font-display text-2xl text-brand xl:hidden">NG</span></Link>
         <nav className="flex flex-1 flex-col gap-1">
           {items.map((it) => (
-            <a key={it.to} href={it.to} onClick={(e) => { e.preventDefault(); nav({ to: it.to }); }}
+            <a key={it.to} href={it.to} onClick={(e) => { e.preventDefault(); nav({ href: it.to }); }}
               className="group relative flex items-center gap-4 rounded-xl px-3 py-3 text-sidebar-foreground transition hover:bg-sidebar-accent">
               <it.icon size={22} className="transition group-hover:text-primary" />
               <span className="hidden text-[15px] font-medium xl:inline">{it.label}</span>
@@ -84,7 +84,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <nav className="fixed inset-x-0 bottom-0 z-40 flex justify-around border-t border-border bg-sidebar/95 py-2 backdrop-blur md:hidden">
         {items.filter((i) => ["Início", "Pesquisar", "Avisos", "Mensagens", "Meu perfil"].includes(i.label)).map((it) => (
-          <a key={it.to} href={it.to} onClick={(e) => { e.preventDefault(); nav({ to: it.to }); }} className="relative p-2" aria-label={it.label}>
+          <a key={it.to} href={it.to} onClick={(e) => { e.preventDefault(); nav({ href: it.to }); }} className="relative p-2" aria-label={it.label}>
             <it.icon size={24} />
             {"badge" in it && it.badge > 0 && <span className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full bg-primary" />}
           </a>
