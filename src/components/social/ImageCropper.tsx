@@ -36,7 +36,7 @@ export function ImageCropper({ file, open, onCancel, onDone, aspect, round }: {
     if (!file) return;
     const u = URL.createObjectURL(file);
     setSrc(u); setZoom(1); setPos({ x: 0, y: 0 });
-    const i = new Image(); i.onload = () => setOrig(i.width / i.height || 1); i.src = u;
+    const i = new Image(); i.onload = () => setOrig((i.width / i.height) || 1); i.src = u;
     return () => URL.revokeObjectURL(u);
   }, [file]);
 
@@ -47,7 +47,7 @@ export function ImageCropper({ file, open, onCancel, onDone, aspect, round }: {
       <DialogContent className="max-w-lg">
         <DialogHeader><DialogTitle className="font-display text-2xl">Ajustar imagem</DialogTitle></DialogHeader>
         <div className="relative h-80 overflow-hidden rounded-lg bg-muted">
-          {src && <Cropper image={src} crop={pos} zoom={zoom} aspect={a} cropShape={round ? "round" : "rect"} onCropChange={setPos} onZoomChange={setZoom} onCropComplete={(_, px) => setArea(px)} />}
+          {src && <Cropper image={src} crop={pos} zoom={zoom} aspect={a} cropShape={round ? "round" : "rect"} onCropChange={setPos} onZoomChange={(z) => setZoom(z)} onCropComplete={(_, px) => setArea(px)} />}
         </div>
         <Slider value={[zoom]} min={1} max={4} step={0.05} onValueChange={(v) => setZoom(v[0])} />
         {!aspect && (

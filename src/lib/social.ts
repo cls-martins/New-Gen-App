@@ -12,7 +12,7 @@ export async function sendFriendRequest(me: string, other: string) {
   if (error) throw new Error("Pedido já enviado");
 }
 export async function openConversation(me: string, other: string) {
-  const [a, b] = [me, other].sort();
+  const a = me < other ? me : other; const b = me < other ? other : me;
   const { data: existing } = await supabase.from("conversations").select("id").eq("user_a", a).eq("user_b", b).maybeSingle();
   if (existing) return existing.id;
   const { data, error } = await supabase.from("conversations").insert({ user_a: a, user_b: b }).select("id").single();

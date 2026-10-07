@@ -22,7 +22,7 @@ export async function compressImage(src: Blob, maxSide = 1600, quality = 0.8): P
 /** Upload into the user's folder and return a long-lived signed URL. */
 export async function uploadMedia(userId: string, blob: Blob, ext: string): Promise<string> {
   const path = `${userId}/${crypto.randomUUID()}.${ext}`;
-  const { error } = await supabase.storage.from("media").upload(path, blob, { contentType: blob.type || undefined });
+  const { error } = await supabase.storage.from("media").upload(path, blob, blob.type ? { contentType: blob.type } : {});
   if (error) throw new Error("Falha no upload: " + error.message);
   const { data, error: e2 } = await supabase.storage.from("media").createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
   if (e2 || !data) throw new Error("Falha ao gerar link do arquivo");
