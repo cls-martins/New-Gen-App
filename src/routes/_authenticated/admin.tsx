@@ -86,7 +86,7 @@ function Users() {
     queryKey: ["admin", "ips", open], enabled: !!open,
     queryFn: async () => (await supabase.from("login_ips").select("*").eq("user_id", open!).order("last_seen", { ascending: false })).data ?? [],
   });
-  const set = async (id: string, patch: Record<string, string>) => {
+  const set = async (id: string, patch: { plan?: "free" | "premium"; status?: string }) => {
     const { error } = await supabase.from("profiles").update(patch).eq("id", id);
     if (error) toast.error("Erro"); else { toast.success("Atualizado"); qc.invalidateQueries({ queryKey: ["admin"] }); }
   };

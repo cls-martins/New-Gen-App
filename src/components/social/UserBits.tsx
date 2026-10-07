@@ -83,7 +83,7 @@ export function RelationshipActions({ other, compact }: { other: MiniUser; compa
   const [busy, setBusy] = useState(false);
   if (!user || user.id === other.id || !rel) return null;
 
-  const run = async (fn: () => Promise<unknown>, msg?: string) => {
+  const run = async (fn: () => PromiseLike<unknown>, msg?: string) => {
     setBusy(true);
     try { await fn(); if (msg) toast.success(msg); } catch (e) { toast.error((e as Error).message); }
     setBusy(false);
@@ -103,7 +103,7 @@ export function RelationshipActions({ other, compact }: { other: MiniUser; compa
       {rel.friends ? (
         <Button size={size} variant="outline" disabled={busy} onClick={() => run(async () => {
           if (!confirm("Remover amizade?")) return;
-          const [a, b] = [user.id, other.id].sort();
+          const a = user.id < other.id ? user.id : other.id; const b = user.id < other.id ? other.id : user.id;
           await supabase.from("friendships").delete().eq("user_a", a).eq("user_b", b);
         }, "Amizade removida")}>Amigos ✓</Button>
       ) : rel.requestReceived ? (
