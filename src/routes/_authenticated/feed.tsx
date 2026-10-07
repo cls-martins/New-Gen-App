@@ -42,7 +42,7 @@ export function PostList({ query }: { query: ReturnType<typeof useFeed> }) {
   const sentinel = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = sentinel.current; if (!el) return;
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting && query.hasNextPage && !query.isFetchingNextPage) query.fetchNextPage(); }, { rootMargin: "600px" });
+    const io = new IntersectionObserver(([e]) => { if (e?.isIntersecting && query.hasNextPage && !query.isFetchingNextPage) query.fetchNextPage(); }, { rootMargin: "600px" });
     io.observe(el); return () => io.disconnect();
   }, [query]);
   const posts = query.data?.pages.flat() ?? [];

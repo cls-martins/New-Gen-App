@@ -6,7 +6,7 @@ function clientIp() {
   return (
     getRequestHeader("cf-connecting-ip") ||
     getRequestHeader("x-real-ip") ||
-    (getRequestHeader("x-forwarded-for") || "").split(",")[0].trim() ||
+    (getRequestHeader("x-forwarded-for") || "").split(",")[0]?.trim() ||
     "unknown"
   );
 }

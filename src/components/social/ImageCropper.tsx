@@ -26,7 +26,7 @@ export function ImageCropper({ file, open, onCancel, onDone, aspect, round }: {
   file: File | null; open: boolean; onCancel: () => void; onDone: (b: Blob, previewUrl: string) => void; aspect?: number; round?: boolean;
 }) {
   const [src, setSrc] = useState<string>("");
-  const [orig, setOrig] = useState(1);
+  const [orig, setOrig] = useState<number>(1);
   const [ratio, setRatio] = useState<number | "orig">(aspect ?? "orig");
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -36,7 +36,7 @@ export function ImageCropper({ file, open, onCancel, onDone, aspect, round }: {
     if (!file) return;
     const u = URL.createObjectURL(file);
     setSrc(u); setZoom(1); setPos({ x: 0, y: 0 });
-    const i = new Image(); i.onload = () => setOrig(i.width / i.height); i.src = u;
+    const i = new Image(); i.onload = () => setOrig(i.width / i.height || 1); i.src = u;
     return () => URL.revokeObjectURL(u);
   }, [file]);
 
