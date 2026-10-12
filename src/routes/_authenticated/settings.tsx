@@ -23,9 +23,9 @@ export const Route = createFileRoute("/_authenticated/settings")({
   component: Settings,
 });
 
-const EFFECTS = ["none", "gradient", "glow", "fire", "chrome"];
+const EFFECTS = ["none", "gradient", "glow", "fire", "chrome"] as const;
 const EFFECT_LABEL: Record<string, string> = { none: "Nenhum", gradient: "Gradiente", glow: "Brilho", fire: "Fogo", chrome: "Cromado" };
-const NOTIF = [["like", "Curtidas"], ["comment", "Comentários"], ["follow", "Novos seguidores"], ["friend_request", "Pedidos de amizade"], ["friend_accept", "Amizades aceitas"], ["message", "Mensagens"]];
+const NOTIF = [["like", "Curtidas"], ["comment", "Comentários"], ["follow", "Novos seguidores"], ["friend_request", "Pedidos de amizade"], ["friend_accept", "Amizades aceitas"], ["message", "Mensagens"]] as const;
 
 function Settings() {
   const { user, profile, refresh } = useAuth();
