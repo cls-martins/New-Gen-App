@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep the homepage's extra CTA text and URL in `src/lib/homepage.ts` so they can be edited independently of presentation.
