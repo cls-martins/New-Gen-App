@@ -31,7 +31,7 @@ export const POST_SELECT = `
 
 export const PREMIUM_WHATSAPP = "5585985833136";
 export function premiumLink(username?: string) {
-  const msg = `Olá! Quero assinar o *Premium* da New Gen Shitpost.\n\nUsuário: @${username ?? ""}\nPlano: Premium\n\nComo faço o pagamento?`;
+  const msg = `Olá! Quero assinar o *Premium* da NewGen Shitpost.\n\nUsuário: @${username ?? ""}\nPlano: Premium\n\nComo faço o pagamento?`;
   return `https://wa.me/${PREMIUM_WHATSAPP}?text=${encodeURIComponent(msg)}`;
 }
 

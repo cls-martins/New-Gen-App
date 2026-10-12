@@ -5,10 +5,10 @@ import { Logo } from "@/components/social/AppShell";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "New Gen Shitpost — a rede social da comunidade" },
-      { name: "description", content: "Poste memes, faça amizades, converse e participe da comunidade New Gen Shitpost." },
-      { property: "og:title", content: "New Gen Shitpost" },
-      { property: "og:description", content: "A rede social da comunidade New Gen Shitpost." },
+      { title: "NewGen Shitpost — a rede social da comunidade" },
+      { name: "description", content: "Poste memes, faça amizades, converse e participe da comunidade NewGen Shitpost." },
+      { property: "og:title", content: "NewGen Shitpost" },
+      { property: "og:description", content: "A rede social da comunidade NewGen Shitpost." },
     ],
   }),
   component: Index,

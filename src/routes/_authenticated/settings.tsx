@@ -18,7 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Configurações — New Gen Shitpost" }, { name: "description", content: "Conta, perfil, aparência e privacidade." }, { property: "og:title", content: "Configurações" }, { property: "og:description", content: "Ajuste sua conta." }] }),
+  head: () => ({ meta: [{ title: "Configurações — NewGen Shitpost" }, { name: "description", content: "Conta, perfil, aparência e privacidade." }, { property: "og:title", content: "Configurações" }, { property: "og:description", content: "Ajuste sua conta." }] }),
   component: Settings,
 });
 

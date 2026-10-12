@@ -99,7 +99,7 @@ export function Composer({ open, onOpenChange }: { open: boolean; onOpenChange: 
             <div className="space-y-3">
               <div className="flex gap-3">
                 {profile && <Avatar user={profile} size={40} />}
-                <textarea autoFocus value={text} onChange={(e) => setText(e.target.value)} maxLength={2000} rows={4} placeholder="O que tá rolando na New Gen?"
+                <textarea autoFocus value={text} onChange={(e) => setText(e.target.value)} maxLength={2000} rows={4} placeholder="O que tá rolando na NewGen?"
                   className="flex-1 resize-none bg-transparent text-lg outline-none placeholder:text-muted-foreground" />
               </div>
               {image && <Preview onRemove={() => setImage(null)}><img src={image.url} alt="" className="max-h-72 w-full object-contain" /></Preview>}
