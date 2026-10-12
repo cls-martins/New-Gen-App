@@ -836,6 +836,21 @@ export type Database = {
         }
         Relationships: []
       }
+      projeto_ativo: {
+        Row: {
+          atualizado_em: string | null
+          id: number
+        }
+        Insert: {
+          atualizado_em?: string | null
+          id?: number
+        }
+        Update: {
+          atualizado_em?: string | null
+          id?: number
+        }
+        Relationships: []
+      }
       reports: {
         Row: {
           created_at: string
