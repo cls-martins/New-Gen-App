@@ -49,7 +49,7 @@ export function ImageCropper({ file, open, onCancel, onDone, aspect, round }: {
         <div className="relative h-80 overflow-hidden rounded-lg bg-muted">
           {src && <Cropper image={src} crop={pos} zoom={zoom} aspect={a} cropShape={round ? "round" : "rect"} onCropChange={setPos} onZoomChange={(z) => setZoom(z)} onCropComplete={(_, px) => setArea(px)} />}
         </div>
-        <Slider value={[zoom]} min={1} max={4} step={0.05} onValueChange={(v) => setZoom(v[0])} />
+        <Slider value={[zoom]} min={1} max={4} step={0.05} onValueChange={(v) => setZoom(v[0] ?? 1)} />
         {!aspect && (
           <div className="flex flex-wrap gap-2">
             {RATIOS.map((r) => (

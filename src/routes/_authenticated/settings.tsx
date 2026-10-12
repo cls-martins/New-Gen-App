@@ -1,3 +1,4 @@
+import type { Database } from "@/integrations/supabase/types";
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -42,7 +43,7 @@ function Settings() {
 
   if (!profile || !user) return <PageHeader title="Configurações" />;
   const premium = profile.plan === "premium";
-  const update = async (patch: Parameters<ReturnType<typeof supabase.from<"profiles">>["update"]>[0], msg = "Salvo!") => {
+  const update = async (patch: Database["public"]["Tables"]["profiles"]["Update"], msg = "Salvo!") => {
     const { error } = await supabase.from("profiles").update(patch).eq("id", user.id);
     if (error) { toast.error(error.message.includes("duplicate") ? "Esse @ já está em uso" : "Erro ao salvar"); return false; }
     toast.success(msg); await refresh(); qc.invalidateQueries(); return true;
