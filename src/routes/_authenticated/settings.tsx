@@ -106,7 +106,7 @@ function Settings() {
             <div className="mt-2 flex flex-wrap gap-2">
               {EFFECTS.map((e) => (
                 <button key={e} disabled={!premium} onClick={() => setF({ ...f, name_effect: e })} className={`rounded-lg border px-3 py-2 text-sm disabled:opacity-40 ${f.name_effect === e ? "border-primary" : "border-border"}`}>
-                  <DisplayName user={{ display_name: EFFECT_LABEL[e], name_effect: e }} />
+                  <DisplayName user={{ display_name: EFFECT_LABEL[e] ?? e, name_effect: e }} />
                 </button>
               ))}
             </div>
