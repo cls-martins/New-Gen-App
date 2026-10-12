@@ -77,7 +77,6 @@
   --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(0.24 0.02 20);
   --sidebar-ring: oklch(0.93 0.22 118);
-  --gradient-brand: linear-gradient(135deg, oklch(0.93 0.22 118), oklch(0.66 0.26 0));
   --shadow-glow: 0 0 40px -10px oklch(0.93 0.22 118 / 0.45);
 }
 
@@ -115,23 +114,43 @@
   }
 }
 
-@utility font-display { font-family: var(--font-display); letter-spacing: 0.01em; text-transform: uppercase; }
-@utility bg-brand { background-image: var(--gradient-brand); }
+@utility font-display { font-family: var(--font-display); letter-spacing: 0; text-transform: uppercase; }
+@utility bg-brand { background-color: var(--primary); }
 @utility shadow-glow { box-shadow: var(--shadow-glow); }
 @utility text-brand {
-  background-image: var(--gradient-brand);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+  color: var(--primary);
 }
 
 /* Premium name effects — add new ones here */
-@keyframes fx-shift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 @keyframes fx-pulse { 0%,100% { text-shadow: 0 0 6px oklch(0.6 0.23 25 / .7); } 50% { text-shadow: 0 0 16px oklch(0.7 0.23 25 / 1); } }
-.fx-gradient { background: linear-gradient(90deg, oklch(0.65 0.23 25), oklch(0.85 0.15 60), oklch(0.65 0.23 25)); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: fx-shift 3s linear infinite; }
+.fx-gradient { color: var(--primary); }
 .fx-glow { animation: fx-pulse 2.2s ease-in-out infinite; color: oklch(0.85 0.1 25); }
-.fx-fire { background: linear-gradient(0deg, oklch(0.55 0.22 25), oklch(0.85 0.17 75)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 4px oklch(0.6 0.2 40 / .6)); }
-.fx-chrome { background: linear-gradient(90deg, oklch(0.95 0 0), oklch(0.6 0 0), oklch(0.95 0 0)); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: fx-shift 4s linear infinite; }
+.fx-fire { color: var(--destructive); }
+.fx-chrome { color: var(--foreground); }
 
 @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.35); } 100% { transform: scale(1); } }
 .animate-pop { animation: pop .35s ease-out; }
 
 @utility shadow-brutal { box-shadow: 6px 6px 0 0 var(--color-foreground); }
+
+@keyframes home-enter {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.home-intro { animation: home-enter .7s ease-out both; }
+.home-intro-copy { animation: home-enter .7s .12s ease-out both; }
+.home-intro-actions { animation: home-enter .7s .24s ease-out both; }
+.home-reveal { transition: opacity .6s ease-out, translate .6s ease-out; }
+.home-reveal[data-pending] { opacity: 0; translate: 0 22px; }
+.home-feature { transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+.home-feature:hover { transform: translateY(-5px) rotate(0); border-color: var(--primary); box-shadow: 5px 5px 0 var(--primary); }
+.home-button { white-space: normal; height: auto; min-height: 48px; transition: transform .2s ease, box-shadow .2s ease; }
+.home-button:hover { transform: translateY(-3px); }
+.home-button:active { transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .home-intro, .home-intro-copy, .home-intro-actions, .fx-glow, .animate-pop { animation: none; }
+  .home-reveal, .home-feature, .home-button { transition: none; }
+  .home-reveal[data-pending] { opacity: 1; translate: none; }
+  .home-feature:hover, .home-button:hover { transform: none; }
+}
