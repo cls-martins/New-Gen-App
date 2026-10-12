@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/social/AppShell";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/premium")({
-  head: () => ({ meta: [{ title: "Premium — New Gen Shitpost" }, { name: "description", content: "Mais posts, links no perfil e efeitos no nome." }, { property: "og:title", content: "Premium" }, { property: "og:description", content: "Seja Premium." }] }),
+  head: () => ({ meta: [{ title: "Premium — NewGen Shitpost" }, { name: "description", content: "Mais posts, links no perfil e efeitos no nome." }, { property: "og:title", content: "Premium" }, { property: "og:description", content: "Seja Premium." }] }),
   component: Premium,
 });
 
@@ -23,7 +23,7 @@ function Premium() {
       <div className="p-5">
         <div className="overflow-hidden rounded-2xl bg-brand p-8 text-primary-foreground shadow-glow">
           <Crown size={40} />
-          <h2 className="mt-3 font-display text-5xl">New Gen Premium</h2>
+          <h2 className="mt-3 font-display text-5xl">NewGen Premium</h2>
           <p className="mt-2 text-primary-foreground/80">Destaque-se na comunidade.</p>
           <ul className="mt-6 space-y-3">{perks.map((p) => <li key={p} className="flex gap-2"><Check className="shrink-0" />{p}</li>)}</ul>
           {profile?.plan === "premium" ? (

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/notifications")({
-  head: () => ({ meta: [{ title: "Avisos — New Gen Shitpost" }, { name: "description", content: "Suas notificações." }, { property: "og:title", content: "Avisos" }, { property: "og:description", content: "Suas notificações." }] }),
+  head: () => ({ meta: [{ title: "Avisos — NewGen Shitpost" }, { name: "description", content: "Suas notificações." }, { property: "og:title", content: "Avisos" }, { property: "og:description", content: "Suas notificações." }] }),
   component: Notifications,
 });
 

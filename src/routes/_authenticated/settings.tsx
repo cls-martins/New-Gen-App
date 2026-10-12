@@ -1,3 +1,4 @@
+import type { Database } from "@/integrations/supabase/types";
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -18,13 +19,13 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Configurações — New Gen Shitpost" }, { name: "description", content: "Conta, perfil, aparência e privacidade." }, { property: "og:title", content: "Configurações" }, { property: "og:description", content: "Ajuste sua conta." }] }),
+  head: () => ({ meta: [{ title: "Configurações — NewGen Shitpost" }, { name: "description", content: "Conta, perfil, aparência e privacidade." }, { property: "og:title", content: "Configurações" }, { property: "og:description", content: "Ajuste sua conta." }] }),
   component: Settings,
 });
 
-const EFFECTS = ["none", "gradient", "glow", "fire", "chrome"];
+const EFFECTS = ["none", "gradient", "glow", "fire", "chrome"] as const;
 const EFFECT_LABEL: Record<string, string> = { none: "Nenhum", gradient: "Gradiente", glow: "Brilho", fire: "Fogo", chrome: "Cromado" };
-const NOTIF = [["like", "Curtidas"], ["comment", "Comentários"], ["follow", "Novos seguidores"], ["friend_request", "Pedidos de amizade"], ["friend_accept", "Amizades aceitas"], ["message", "Mensagens"]];
+const NOTIF = [["like", "Curtidas"], ["comment", "Comentários"], ["follow", "Novos seguidores"], ["friend_request", "Pedidos de amizade"], ["friend_accept", "Amizades aceitas"], ["message", "Mensagens"]] as const;
 
 function Settings() {
   const { user, profile, refresh } = useAuth();
@@ -42,7 +43,7 @@ function Settings() {
 
   if (!profile || !user) return <PageHeader title="Configurações" />;
   const premium = profile.plan === "premium";
-  const update = async (patch: Parameters<ReturnType<typeof supabase.from<"profiles">>["update"]>[0], msg = "Salvo!") => {
+  const update = async (patch: Database["public"]["Tables"]["profiles"]["Update"], msg = "Salvo!") => {
     const { error } = await supabase.from("profiles").update(patch).eq("id", user.id);
     if (error) { toast.error(error.message.includes("duplicate") ? "Esse @ já está em uso" : "Erro ao salvar"); return false; }
     toast.success(msg); await refresh(); qc.invalidateQueries(); return true;
@@ -105,7 +106,7 @@ function Settings() {
             <div className="mt-2 flex flex-wrap gap-2">
               {EFFECTS.map((e) => (
                 <button key={e} disabled={!premium} onClick={() => setF({ ...f, name_effect: e })} className={`rounded-lg border px-3 py-2 text-sm disabled:opacity-40 ${f.name_effect === e ? "border-primary" : "border-border"}`}>
-                  <DisplayName user={{ display_name: EFFECT_LABEL[e], name_effect: e }} />
+                  <DisplayName user={{ display_name: EFFECT_LABEL[e] ?? e, name_effect: e }} />
                 </button>
               ))}
             </div>

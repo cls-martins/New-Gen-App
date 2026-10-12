@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 export function Logo({ className }: { className?: string }) {
   return (
     <span className={cn("font-display leading-none", className)}>
-      <span className="text-brand">New Gen</span> <span>Shitpost</span>
+      <span className="text-brand">NewGen</span> <span>Shitpost</span>
     </span>
   );
 }
