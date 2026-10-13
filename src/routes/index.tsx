@@ -80,7 +80,7 @@ function Index() {
       </section>
 
       <section className="home-reveal mx-auto max-w-6xl border-t border-border px-5 py-16">
-        <h2 className="font-display text-4xl md:text-5xl">O que a NewGen<span className="text-primary">entrega para você</span></h2>
+        <h2 className="font-display text-4xl md:text-5xl">O que a NewGen <span className="text-primary">entrega para você</span></h2>
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {features.map(({ icon: Icon, t, d }, i) => (
             <div key={t} className={`home-feature rounded-md border-2 border-foreground bg-card p-6 ${i % 2 ? "md:rotate-1" : "md:-rotate-1"}`}>
