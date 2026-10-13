@@ -7,7 +7,7 @@ import { AuthLayout } from "@/components/social/AuthLayout";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/forgot-password")({
-  head: () => ({ meta: [{ title: "Recuperar senha — NewGen Shitpost" }, { name: "description", content: "Receba um link para redefinir sua senha." }, { property: "og:title", content: "Recuperar senha" }, { property: "og:description", content: "Redefina sua senha." }] }),
+  head: () => ({ meta: [{ title: "Recuperar senha — NewGen Shitpost" }, { name: "description", content: "Receba um link para redefinir sua senha." }, { property: "og:title", content: "Recuperar senha — NewGen Shitpost" }, { property: "og:description", content: "Redefina sua senha." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Forgot,
 });
 

@@ -7,7 +7,7 @@ import { AuthLayout } from "@/components/social/AuthLayout";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/reset-password")({
-  head: () => ({ meta: [{ title: "Nova senha — NewGen Shitpost" }, { name: "description", content: "Defina uma nova senha." }, { property: "og:title", content: "Nova senha" }, { property: "og:description", content: "Defina uma nova senha." }] }),
+  head: () => ({ meta: [{ title: "Nova senha — NewGen Shitpost" }, { name: "description", content: "Defina uma nova senha." }, { property: "og:title", content: "Nova senha — NewGen Shitpost" }, { property: "og:description", content: "Defina uma nova senha." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Reset,
 });
 

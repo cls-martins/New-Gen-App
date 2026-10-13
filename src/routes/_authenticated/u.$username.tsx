@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { PostList, useFeed } from "./feed";
 
 export const Route = createFileRoute("/_authenticated/u/$username")({
-  head: ({ params }) => ({ meta: [{ title: `@${params.username} — NewGen Shitpost` }, { name: "description", content: `Perfil de @${params.username} na NewGen Shitpost.` }, { property: "og:title", content: `@${params.username}` }, { property: "og:description", content: "Perfil na NewGen Shitpost." }] }),
+  head: ({ params }) => ({ meta: [{ title: `@${params.username} — NewGen Shitpost` }, { name: "description", content: `Perfil de @${params.username} na NewGen Shitpost.` }, { property: "og:title", content: `@${params.username} — NewGen Shitpost` }, { property: "og:description", content: "Perfil na NewGen Shitpost." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: ProfilePage,
 });
 

@@ -11,7 +11,7 @@ import { ImageCropper } from "@/components/social/ImageCropper";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/register")({
-  head: () => ({ meta: [{ title: "Criar conta — NewGen Shitpost" }, { name: "description", content: "Crie sua conta na NewGen Shitpost." }, { property: "og:title", content: "Criar conta — NewGen Shitpost" }, { property: "og:description", content: "Entre para a comunidade." }] }),
+  head: () => ({ meta: [{ title: "Criar conta — NewGen Shitpost" }, { name: "description", content: "Crie sua conta na NewGen Shitpost." }, { property: "og:title", content: "Criar conta — NewGen Shitpost" }, { property: "og:description", content: "Entre para a comunidade." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Register,
 });
 
