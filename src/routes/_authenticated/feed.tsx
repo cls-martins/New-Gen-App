@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/feed")({
-  head: () => ({ meta: [{ title: "Início — NewGen Shitpost" }, { name: "description", content: "Seu feed da comunidade." }, { property: "og:title", content: "Início — NewGen Shitpost" }, { property: "og:description", content: "Seu feed da comunidade." }] }),
+  head: () => ({ meta: [{ title: "Início — NewGen Shitpost" }, { name: "description", content: "Seu feed da comunidade." }, { property: "og:title", content: "Início — NewGen Shitpost" }, { property: "og:description", content: "Seu feed da comunidade." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Feed,
 });
 

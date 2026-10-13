@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/social/AppShell";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/premium")({
-  head: () => ({ meta: [{ title: "Premium — NewGen Shitpost" }, { name: "description", content: "Mais posts, links no perfil e efeitos no nome." }, { property: "og:title", content: "Premium" }, { property: "og:description", content: "Seja Premium." }] }),
+  head: () => ({ meta: [{ title: "Premium — NewGen Shitpost" }, { name: "description", content: "Mais posts, links no perfil e efeitos no nome." }, { property: "og:title", content: "Premium — NewGen Shitpost" }, { property: "og:description", content: "Seja Premium." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Premium,
 });
 

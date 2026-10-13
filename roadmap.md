@@ -1,6 +1,6 @@
 # Homepage adjustments
-- [ ] Remove pink titles and all gradients.
-- [ ] Remove the repeated ticker divider.
-- [ ] Add an extra CTA with editable link and text.
-- [ ] Add homepage animations with reduced-motion support.
-- [ ] Verify homepage links and presentation.
+- [x] Remove pink titles and all gradients.
+- [x] Remove the repeated ticker divider.
+- [x] Add an extra CTA with editable link and text.
+- [x] Add homepage animations with reduced-motion support.
+- [x] Verify homepage links and presentation.

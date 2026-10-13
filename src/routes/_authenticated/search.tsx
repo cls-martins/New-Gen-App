@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/search")({
-  head: () => ({ meta: [{ title: "Pesquisar — NewGen Shitpost" }, { name: "description", content: "Encontre pessoas e posts." }, { property: "og:title", content: "Pesquisar" }, { property: "og:description", content: "Encontre pessoas e posts." }] }),
+  head: () => ({ meta: [{ title: "Pesquisar — NewGen Shitpost" }, { name: "description", content: "Encontre pessoas e posts." }, { property: "og:title", content: "Pesquisar — NewGen Shitpost" }, { property: "og:description", content: "Encontre pessoas e posts." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: SearchPage,
 });
 

@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/messages")({
   validateSearch: z.object({ c: z.string().optional() }),
-  head: () => ({ meta: [{ title: "Mensagens — NewGen Shitpost" }, { name: "description", content: "Suas conversas privadas." }, { property: "og:title", content: "Mensagens" }, { property: "og:description", content: "Suas conversas privadas." }] }),
+  head: () => ({ meta: [{ title: "Mensagens — NewGen Shitpost" }, { name: "description", content: "Suas conversas privadas." }, { property: "og:title", content: "Mensagens — NewGen Shitpost" }, { property: "og:description", content: "Suas conversas privadas." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Messages,
 });
 

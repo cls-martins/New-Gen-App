@@ -9,7 +9,7 @@ import { AuthLayout } from "@/components/social/AuthLayout";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "Entrar — NewGen Shitpost" }, { name: "description", content: "Entre na sua conta NewGen Shitpost." }, { property: "og:title", content: "Entrar — NewGen Shitpost" }, { property: "og:description", content: "Entre na sua conta." }] }),
+  head: () => ({ meta: [{ title: "Entrar — NewGen Shitpost" }, { name: "description", content: "Entre na sua conta NewGen Shitpost." }, { property: "og:title", content: "Entrar — NewGen Shitpost" }, { property: "og:description", content: "Entre na sua conta." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Login,
 });
 

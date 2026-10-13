@@ -97,11 +97,11 @@ function Index() {
           <h2 className="font-display text-4xl md:text-6xl">Bora pra resenha?</h2>
           <p className="mt-3 max-w-lg font-medium">Cria sua conta em menos de um minuto e já sai postando.</p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Button asChild variant="outline" className="home-button border-2 border-primary-foreground px-6 py-3 font-display text-lg"><Link to="/register">Criar conta grátis</Link></Button>
-            <Button asChild variant="outline" className="home-button border-2 border-primary-foreground px-6 py-3 font-display text-lg"><a href="https://instagram.com/newgen.post" target="_blank" rel="noopener noreferrer">
+            <Button asChild variant="outline" className="home-button border-2 border-primary-foreground text-foreground px-6 py-3 font-display text-lg"><Link to="/register">Criar conta grátis</Link></Button>
+            <Button asChild variant="outline" className="home-button border-2 border-primary-foreground text-foreground px-6 py-3 font-display text-lg"><a href="https://instagram.com/newgen.post" target="_blank" rel="noopener noreferrer">
               <Instagram size={20} /> @newgen.post
             </a></Button>
-            <Button asChild variant="outline" className="home-button border-2 border-primary-foreground px-6 py-3 font-display text-lg">
+            <Button asChild variant="outline" className="home-button border-2 border-primary-foreground text-foreground px-6 py-3 font-display text-lg">
               <a href={homepageExtraButton.link} target="_blank" rel="noopener noreferrer">{homepageExtraButton.text}<ArrowUpRight size={20} /></a>
             </Button>
           </div>
