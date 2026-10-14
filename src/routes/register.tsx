@@ -61,18 +61,18 @@ function Register() {
   );
 
   return (
-    <AuthLayout title="Criar conta" subtitle="Entre para a comunidade.">
+    <AuthLayout title="Crie sua conta" subtitle="Faça parte do melhor app de memes">
       <form onSubmit={submit} className="space-y-3">
         <div className="flex items-center gap-3">
           <button type="button" onClick={() => ref.current?.click()} className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-border bg-muted text-xs text-muted-foreground">
             {avatar ? <img src={avatar.url} alt="" className="h-full w-full object-cover" /> : "Foto"}
           </button>
-          <span className="text-sm text-muted-foreground">Foto de perfil (opcional)</span>
+          <span className="text-sm text-muted-foreground">Foto de perfil (clique para adicionar)</span>
           <input ref={ref} type="file" accept="image/*" hidden onChange={(e) => { const x = e.target.files?.[0]; e.target.value = ""; if (x) setCropFile(x); }} />
         </div>
-        <div><Label>Nome (pode ter espaço)</Label><Input required maxLength={40} value={f.display_name} onChange={set("display_name")} placeholder="Zé do Meme" /></div>
-        <div><Label>Arroba (único)</Label><Input required value={f.username} onChange={set("username")} placeholder="zedomeme" /></div>
-        <div><Label>Telefone (WhatsApp)</Label><Input required type="tel" value={f.phone} onChange={set("phone")} placeholder="(85) 99999-9999" /><p className="mt-1 text-xs text-muted-foreground">Usado para confirmar que você é do grupo.</p></div>
+        <div><Label>Nome (pode ter espaço)</Label><Input required maxLength={40} value={f.display_name} onChange={set("display_name")} placeholder="Fulano de tal" /></div>
+        <div><Label>@ Arroba</Label><Input required value={f.username} onChange={set("username")} placeholder="@fulanodetal" /></div>
+        <div><Label>Telefone (WhatsApp)</Label><Input required type="tel" value={f.phone} onChange={set("phone")} placeholder="(12) 3456-7890" /><p className="mt-1 text-xs text-muted-foreground">Usado para confirmar se faz parte do grupo da comunidade.</p></div>
         <div><Label>Email</Label><Input required type="email" value={f.email} onChange={set("email")} /></div>
         <div><Label>Senha</Label><Input required type="password" value={f.password} onChange={set("password")} /></div>
         <div><Label>Confirmar senha</Label><Input required type="password" value={f.confirm} onChange={set("confirm")} /></div>
