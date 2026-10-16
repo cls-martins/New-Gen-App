@@ -47,7 +47,7 @@ export function PostList({ query }: { query: ReturnType<typeof useFeed> }) {
   }, [query]);
   const posts = query.data?.pages.flat() ?? [];
   if (query.isLoading) return <div className="space-y-6 p-5">{[0, 1, 2].map((i) => <div key={i} className="flex gap-3"><Skeleton className="h-11 w-11 rounded-full" /><div className="flex-1 space-y-2"><Skeleton className="h-4 w-1/3" /><Skeleton className="h-20 w-full" /></div></div>)}</div>;
-  if (!posts.length) return <div className="px-6 py-20 text-center"><div className="font-display text-4xl text-brand">Silêncio total</div><p className="mt-2 text-muted-foreground">Nenhuma publicação por aqui ainda. Seja o primeiro a postar!</p></div>;
+  if (!posts.length) return <div className="px-6 py-20 text-center"><div className="font-display text-4xl text-brand">Silêncio total</div><p className="mt-2 text-muted-foreground">Nenhuma publicação por aqui ainda.</p></div>;
   return (
     <>
       {posts.map((p) => <PostCard key={p.id} post={p} />)}
