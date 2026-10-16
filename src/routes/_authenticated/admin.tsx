@@ -86,7 +86,7 @@ function Users() {
     queryKey: ["admin", "ips", open], enabled: !!open,
     queryFn: async () => (await supabase.from("login_ips").select("*").eq("user_id", open!).order("last_seen", { ascending: false })).data ?? [],
   });
-  const set = async (id: string, patch: { plan?: "free" | "premium"; status?: string }) => {
+  const set = async (id: string, patch: { plan?: "free" | "premium"; status?: string; verified?: boolean }) => {
     const { error } = await supabase.from("profiles").update(patch).eq("id", id);
     if (error) toast.error("Erro"); else { toast.success("Atualizado"); qc.invalidateQueries({ queryKey: ["admin"] }); }
   };
@@ -98,6 +98,7 @@ function Users() {
   const list = data.filter((p) => !filter || (p.display_name + p.username).toLowerCase().includes(filter.toLowerCase()));
   return (
     <div className="pt-3">
+      <div className="mb-2 text-sm text-muted-foreground">{data.length} contas · {data.filter((p) => p.verified).length} verificadas</div>
       <Input placeholder="Filtrar…" value={filter} onChange={(e) => setFilter(e.target.value)} className="mb-3" />
       {list.map((p) => (
         <div key={p.id} className="border-b border-border py-3">
@@ -105,7 +106,7 @@ function Users() {
             <Avatar user={p} size={40} />
             <div className="min-w-0 flex-1">
               <Link to="/u/$username" params={{ username: p.username }}><DisplayName user={p} /></Link>
-              <div className="text-xs text-muted-foreground">@{p.username} · 📱 {p.phone || "sem telefone"} · {p.plan} · <span className={p.status !== "active" ? "text-destructive" : ""}>{p.status}</span></div>
+              <div className="text-xs text-muted-foreground">@{p.username} · 📱 {p.phone || "sem telefone"} · {p.plan}{p.verified ? " · verificado" : ""} · <span className={p.status !== "active" ? "text-destructive" : ""}>{p.status}</span></div>
             </div>
             <Button size="sm" variant="ghost" onClick={() => setOpen(open === p.id ? null : p.id)}>Gerenciar</Button>
           </div>
@@ -113,6 +114,7 @@ function Users() {
             <div className="mt-3 space-y-3 rounded-xl bg-surface p-3">
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" variant={p.plan === "premium" ? "secondary" : "default"} onClick={() => set(p.id, { plan: p.plan === "premium" ? "free" : "premium" })}>{p.plan === "premium" ? "Remover Premium" : "Ativar Premium"}</Button>
+                <Button size="sm" variant={p.verified ? "secondary" : "default"} onClick={() => set(p.id, { verified: !p.verified })}>{p.verified ? "Remover verificado" : "Verificar conta"}</Button>
                 <Button size="sm" variant="outline" onClick={() => set(p.id, { status: "active" })}>Ativar</Button>
                 <Button size="sm" variant="outline" onClick={() => set(p.id, { status: "suspended" })}>Suspender</Button>
                 <Button size="sm" variant="destructive" onClick={() => confirm("Banir usuário?") && set(p.id, { status: "banned" })}>Banir</Button>

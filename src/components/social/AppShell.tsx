@@ -83,7 +83,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="min-w-0 flex-1 border-r border-border pb-20 md:pb-0">{children}</main>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 flex justify-around border-t border-border bg-sidebar/95 py-2 backdrop-blur md:hidden">
-        {items.filter((i) => ["Início", "Pesquisar", "Avisos", "Mensagens", "Meu perfil"].includes(i.label)).map((it) => (
+        {items.filter((i) => ["Início", "Pesquisar", "Avisos", "Mensagens", "Meu perfil", "Admin"].includes(i.label)).map((it) => (
           <a key={it.to} href={it.to} onClick={(e) => { e.preventDefault(); nav({ href: it.to }); }} className="relative p-2" aria-label={it.label}>
             <it.icon size={24} />
             {"badge" in it && it.badge > 0 && <span className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full bg-primary" />}

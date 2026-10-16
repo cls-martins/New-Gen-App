@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth";
 import { followUser, unfollowUser, sendFriendRequest, openConversation } from "@/lib/social";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { BadgeCheck } from "lucide-react";
 
 export type MiniUser = {
   id: string;
@@ -17,6 +18,7 @@ export type MiniUser = {
   avatar_border_color: string | null;
   name_effect: string | null;
   plan?: string;
+  verified?: boolean | null;
 };
 
 export function Avatar({ user, size = 40, className }: { user: Pick<MiniUser, "avatar_url" | "display_name" | "avatar_border_color">; size?: number; className?: string }) {
@@ -34,9 +36,14 @@ export function Avatar({ user, size = 40, className }: { user: Pick<MiniUser, "a
   );
 }
 
-export function DisplayName({ user, className }: { user: Pick<MiniUser, "display_name" | "name_effect">; className?: string }) {
+export function DisplayName({ user, className }: { user: Pick<MiniUser, "display_name" | "name_effect"> & { verified?: boolean | null }; className?: string }) {
   const fx = user.name_effect && user.name_effect !== "none" ? `fx-${user.name_effect}` : "";
-  return <span className={cn("font-semibold", fx, className)}>{user.display_name}</span>;
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span className={cn("font-semibold", fx, className)}>{user.display_name}</span>
+      {user.verified && <BadgeCheck size={16} className="shrink-0 fill-primary text-primary-foreground" aria-label="Verificado" />}
+    </span>
+  );
 }
 
 export function useProfileStats(id: string | undefined) {
