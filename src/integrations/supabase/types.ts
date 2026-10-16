@@ -795,6 +795,7 @@ export type Database = {
           theme: string
           updated_at: string
           username: string
+          verified: boolean
         }
         Insert: {
           allow_messages?: boolean
@@ -814,6 +815,7 @@ export type Database = {
           theme?: string
           updated_at?: string
           username: string
+          verified?: boolean
         }
         Update: {
           allow_messages?: boolean
@@ -833,6 +835,7 @@ export type Database = {
           theme?: string
           updated_at?: string
           username?: string
+          verified?: boolean
         }
         Relationships: []
       }

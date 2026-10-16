@@ -22,7 +22,7 @@ export async function openConversation(me: string, other: string) {
 
 export const POST_SELECT = `
   id, content, created_at, author_id,
-  author:profiles!posts_author_id_fkey(id, username, display_name, avatar_url, avatar_border_color, name_effect, plan),
+  author:profiles!posts_author_id_fkey(id, username, display_name, avatar_url, avatar_border_color, name_effect, plan, verified),
   post_media(id, kind, url),
   polls(id, question, poll_options(id, label, position), poll_votes(option_id, user_id)),
   post_likes(user_id),
