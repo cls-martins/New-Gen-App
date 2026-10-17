@@ -8,7 +8,8 @@ import { useAuth } from "@/lib/auth";
 import { followUser, unfollowUser, sendFriendRequest, openConversation } from "@/lib/social";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { BadgeCheck } from "lucide-react";
+import { BadgeCheck, Crown } from "lucide-react";
+import { fxClass } from "@/lib/premium-fx";
 
 export type MiniUser = {
   id: string;
@@ -19,12 +20,15 @@ export type MiniUser = {
   name_effect: string | null;
   plan?: string;
   verified?: boolean | null;
+  avatar_frame?: string | null;
+  comment_style?: string | null;
 };
 
-export function Avatar({ user, size = 40, className }: { user: Pick<MiniUser, "avatar_url" | "display_name" | "avatar_border_color">; size?: number; className?: string }) {
-  return (
+export function Avatar({ user, size = 40, className }: { user: Pick<MiniUser, "avatar_url" | "display_name" | "avatar_border_color"> & { avatar_frame?: string | null }; size?: number; className?: string }) {
+  const frame = fxClass("af", user.avatar_frame);
+  const inner = (
     <span
-      className={cn("inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-wine font-display text-primary-foreground", className)}
+      className={cn("inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-wine font-display text-primary-foreground", !frame && className)}
       style={{ width: size, height: size, boxShadow: `0 0 0 2px ${user.avatar_border_color || "transparent"}`, fontSize: size * 0.42 }}
     >
       {user.avatar_url ? (
@@ -34,14 +38,16 @@ export function Avatar({ user, size = 40, className }: { user: Pick<MiniUser, "a
       )}
     </span>
   );
+  return frame ? <span className={cn("af shrink-0", frame, className)}>{inner}</span> : inner;
 }
 
-export function DisplayName({ user, className }: { user: Pick<MiniUser, "display_name" | "name_effect"> & { verified?: boolean | null }; className?: string }) {
+export function DisplayName({ user, className }: { user: Pick<MiniUser, "display_name" | "name_effect"> & { verified?: boolean | null; plan?: string | null }; className?: string }) {
   const fx = user.name_effect && user.name_effect !== "none" ? `fx-${user.name_effect}` : "";
   return (
     <span className="inline-flex items-center gap-1">
       <span className={cn("font-semibold", fx, className)}>{user.display_name}</span>
       {user.verified && <BadgeCheck size={16} className="shrink-0 fill-primary text-primary-foreground" aria-label="Verificado" />}
+      {user.plan === "premium" && <Crown size={14} className="shrink-0 text-primary" aria-label="Premium" />}
     </span>
   );
 }
