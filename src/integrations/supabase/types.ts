@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      blacklist: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          reason: string | null
+          user_id: string | null
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          reason?: string | null
+          user_id?: string | null
+          value: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          reason?: string | null
+          user_id?: string | null
+          value?: string
+        }
+        Relationships: []
+      }
       blocked_ips: {
         Row: {
           blocked_by: string | null
@@ -701,24 +728,30 @@ export type Database = {
           content: string | null
           created_at: string
           id: string
+          pinned_at: string | null
           removed: boolean
           updated_at: string
+          views: number
         }
         Insert: {
           author_id: string
           content?: string | null
           created_at?: string
           id?: string
+          pinned_at?: string | null
           removed?: boolean
           updated_at?: string
+          views?: number
         }
         Update: {
           author_id?: string
           content?: string | null
           created_at?: string
           id?: string
+          pinned_at?: string | null
           removed?: boolean
           updated_at?: string
+          views?: number
         }
         Relationships: [
           {
@@ -780,10 +813,13 @@ export type Database = {
         Row: {
           allow_messages: boolean
           avatar_border_color: string | null
+          avatar_frame: string
           avatar_url: string | null
           banner_color: string | null
+          banner_frame: string
           banner_url: string | null
           bio: string | null
+          comment_style: string
           created_at: string
           display_name: string
           id: string
@@ -800,10 +836,13 @@ export type Database = {
         Insert: {
           allow_messages?: boolean
           avatar_border_color?: string | null
+          avatar_frame?: string
           avatar_url?: string | null
           banner_color?: string | null
+          banner_frame?: string
           banner_url?: string | null
           bio?: string | null
+          comment_style?: string
           created_at?: string
           display_name: string
           id: string
@@ -820,10 +859,13 @@ export type Database = {
         Update: {
           allow_messages?: boolean
           avatar_border_color?: string | null
+          avatar_frame?: string
           avatar_url?: string | null
           banner_color?: string | null
+          banner_frame?: string
           banner_url?: string | null
           bio?: string | null
+          comment_style?: string
           created_at?: string
           display_name?: string
           id?: string
@@ -970,6 +1012,10 @@ export type Database = {
     }
     Functions: {
       accept_friend_request: { Args: { _req: string }; Returns: undefined }
+      admin_ban_user: {
+        Args: { _reason: string; _uid: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -977,8 +1023,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_blacklisted: {
+        Args: { _email: string; _phone: string }
+        Returns: boolean
+      }
       is_mutual: { Args: { _a: string; _b: string }; Returns: boolean }
       posts_today: { Args: { _uid: string }; Returns: number }
+      register_post_view: { Args: { _post: string }; Returns: undefined }
       username_available: { Args: { _u: string }; Returns: boolean }
     }
     Enums: {
