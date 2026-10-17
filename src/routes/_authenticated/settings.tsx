@@ -5,7 +5,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { applyTheme, useAuth } from "@/lib/auth";
-import { uploadImage } from "@/lib/media";
+import { uploadImage, uploadMedia } from "@/lib/media";
+import { NAME_EFFECTS, AVATAR_FRAMES, BANNER_FRAMES, COMMENT_STYLES, fxClass, type FxOption } from "@/lib/premium-fx";
 import { deleteMyAccount } from "@/lib/security.functions";
 import { PageHeader } from "@/components/social/AppShell";
 import { Avatar, DisplayName } from "@/components/social/UserBits";
@@ -23,22 +24,21 @@ export const Route = createFileRoute("/_authenticated/settings")({
   component: Settings,
 });
 
-const EFFECTS = ["none", "gradient", "glow", "fire", "chrome"] as const;
-const EFFECT_LABEL: Record<string, string> = { none: "Nenhum", gradient: "Gradiente", glow: "Brilho", fire: "Fogo", chrome: "Cromado" };
 const NOTIF = [["like", "Curtidas"], ["comment", "Comentários"], ["follow", "Novos seguidores"], ["friend_request", "Pedidos de amizade"], ["friend_accept", "Amizades aceitas"], ["message", "Mensagens"]] as const;
 
 function Settings() {
   const { user, profile, refresh } = useAuth();
   const qc = useQueryClient();
   const nav = useNavigate();
-  const [f, setF] = useState({ display_name: "", username: "", bio: "", phone: "", banner_color: "#5a0d14", avatar_border_color: "#c1121f", name_effect: "none" });
+  const [f, setF] = useState({ display_name: "", username: "", bio: "", phone: "", banner_color: "#5a0d14", avatar_border_color: "#c1121f", name_effect: "none", avatar_frame: "none", banner_frame: "none", comment_style: "none" });
   const [crop, setCrop] = useState<{ file: File; kind: "avatar" | "banner" } | null>(null);
   const [saving, setSaving] = useState(false);
   const avRef = useRef<HTMLInputElement>(null);
   const bnRef = useRef<HTMLInputElement>(null);
+  const gifRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (profile) setF({ display_name: profile.display_name, username: profile.username, bio: profile.bio ?? "", phone: profile.phone ?? "", banner_color: profile.banner_color ?? "#5a0d14", avatar_border_color: profile.avatar_border_color ?? "#c1121f", name_effect: profile.name_effect ?? "none" });
+    if (profile) setF({ display_name: profile.display_name, username: profile.username, bio: profile.bio ?? "", phone: profile.phone ?? "", banner_color: profile.banner_color ?? "#5a0d14", avatar_border_color: profile.avatar_border_color ?? "#c1121f", name_effect: profile.name_effect ?? "none", avatar_frame: profile.avatar_frame ?? "none", banner_frame: profile.banner_frame ?? "none", comment_style: profile.comment_style ?? "none" });
   }, [profile]);
 
   if (!profile || !user) return <PageHeader title="Configurações" />;
@@ -53,7 +53,7 @@ function Settings() {
     const username = f.username.toLowerCase();
     if (!/^[a-z0-9_.]{3,24}$/.test(username)) return toast.error("Arroba inválido");
     setSaving(true);
-    await update({ display_name: f.display_name.trim() || username, username, bio: f.bio.slice(0, 300), phone: f.phone, banner_color: f.banner_color, avatar_border_color: f.avatar_border_color, name_effect: premium ? f.name_effect : "none" });
+    await update({ display_name: f.display_name.trim() || username, username, bio: f.bio.slice(0, 300), phone: f.phone, banner_color: f.banner_color, avatar_border_color: f.avatar_border_color, ...(premium ? { name_effect: f.name_effect, avatar_frame: f.avatar_frame, banner_frame: f.banner_frame, comment_style: f.comment_style } : {}) });
     setSaving(false);
   };
 
@@ -81,17 +81,27 @@ function Settings() {
         </TabsList>
 
         <TabsContent value="perfil" className="space-y-4 pt-4">
-          <div className="relative h-32 overflow-hidden rounded-xl" style={profile.banner_url ? { backgroundImage: `url(${profile.banner_url})`, backgroundSize: "cover" } : { background: f.banner_color }}>
+          <div className={`relative h-32 overflow-hidden rounded-xl ${premium && fxClass("bf", f.banner_frame) ? "bf " + fxClass("bf", f.banner_frame) : ""}`} style={profile.banner_url ? { backgroundImage: `url(${profile.banner_url})`, backgroundSize: "cover" } : { background: f.banner_color }}>
             <div className="absolute bottom-2 right-2 flex gap-2">
               <Button size="sm" variant="secondary" onClick={() => bnRef.current?.click()}>Imagem do banner</Button>
+              {premium && <Button size="sm" variant="secondary" onClick={() => gifRef.current?.click()}>Banner GIF</Button>}
               {profile.banner_url && <Button size="sm" variant="secondary" onClick={() => update({ banner_url: null })}>Usar cor</Button>}
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div style={{ boxShadow: `0 0 0 3px ${f.avatar_border_color}` }} className="rounded-full"><Avatar user={{ ...profile, avatar_border_color: "transparent" }} size={80} /></div>
+            <div style={{ boxShadow: `0 0 0 3px ${f.avatar_border_color}` }} className="rounded-full"><Avatar user={{ ...profile, avatar_border_color: "transparent", avatar_frame: premium ? f.avatar_frame : "none" }} size={80} /></div>
             <Button variant="outline" onClick={() => avRef.current?.click()}>Alterar foto</Button>
           </div>
           <input ref={avRef} type="file" accept="image/*" hidden onChange={(e) => { const x = e.target.files?.[0]; e.target.value = ""; if (x) setCrop({ file: x, kind: "avatar" }); }} />
+          <input ref={gifRef} type="file" accept="image/gif" hidden onChange={async (e) => {
+            const x = e.target.files?.[0]; e.target.value = "";
+            if (!x) return;
+            if (x.type !== "image/gif") return toast.error("Escolha um arquivo GIF");
+            if (x.size > 8 * 1024 * 1024) return toast.error("GIF maior que 8MB");
+            const t = toast.loading("Enviando GIF…");
+            try { const url = await uploadMedia(user.id, x, "gif"); toast.dismiss(t); await update({ banner_url: url }, "Banner animado salvo"); }
+            catch (err) { toast.dismiss(t); toast.error((err as Error).message); }
+          }} />
           <input ref={bnRef} type="file" accept="image/*" hidden onChange={(e) => { const x = e.target.files?.[0]; e.target.value = ""; if (x) setCrop({ file: x, kind: "banner" }); }} />
           <div className="grid grid-cols-2 gap-4">
             <div><Label>Cor do banner</Label><Input type="color" value={f.banner_color} onChange={(e) => setF({ ...f, banner_color: e.target.value })} /></div>
@@ -101,16 +111,15 @@ function Settings() {
           <div><Label>Arroba</Label><Input value={f.username} onChange={(e) => setF({ ...f, username: e.target.value })} /></div>
           <div><Label>Telefone</Label><Input value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} /></div>
           <div><Label>Bio</Label><Textarea value={f.bio} maxLength={300} onChange={(e) => setF({ ...f, bio: e.target.value })} /></div>
-          <div>
-            <Label>Efeito no nome {!premium && <Link to="/premium" className="ml-1 text-xs text-primary">(Premium)</Link>}</Label>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {EFFECTS.map((e) => (
-                <button key={e} disabled={!premium} onClick={() => setF({ ...f, name_effect: e })} className={`rounded-lg border px-3 py-2 text-sm disabled:opacity-40 ${f.name_effect === e ? "border-primary" : "border-border"}`}>
-                  <DisplayName user={{ display_name: EFFECT_LABEL[e] ?? e, name_effect: e }} />
-                </button>
-              ))}
-            </div>
-          </div>
+          {!premium && <p className="rounded-lg border border-primary/50 p-3 text-sm">Efeitos, molduras e estilos são do <Link to="/premium" className="font-semibold text-primary">Premium</Link>.</p>}
+          <FxPicker title="Efeito no nome" options={NAME_EFFECTS} value={f.name_effect} disabled={!premium} onChange={(v) => setF({ ...f, name_effect: v })}
+            preview={(o) => <DisplayName user={{ display_name: o.label, name_effect: o.key }} />} />
+          <FxPicker title="Moldura da foto" options={AVATAR_FRAMES} value={f.avatar_frame} disabled={!premium} onChange={(v) => setF({ ...f, avatar_frame: v })}
+            preview={(o) => <div className="flex flex-col items-center gap-2"><Avatar user={{ ...profile, avatar_frame: o.key }} size={36} /><span className="text-xs">{o.label}</span></div>} />
+          <FxPicker title="Moldura do banner" options={BANNER_FRAMES} value={f.banner_frame} disabled={!premium} onChange={(v) => setF({ ...f, banner_frame: v })}
+            preview={(o) => <div className="flex flex-col gap-1"><div className={`bf h-8 w-full rounded bg-wine ${fxClass("bf", o.key)}`} /><span className="text-xs">{o.label}</span></div>} />
+          <FxPicker title="Estilo de comentário" options={COMMENT_STYLES} value={f.comment_style} disabled={!premium} onChange={(v) => setF({ ...f, comment_style: v })}
+            preview={(o) => <div className={`rounded-lg bg-muted px-2 py-1 text-xs ${fxClass("cs", o.key)}`}>{o.label}</div>} />
           {premium && <LinksEditor userId={user.id} />}
           <Button onClick={saveProfile} disabled={saving}>{saving ? "Salvando…" : "Salvar perfil"}</Button>
         </TabsContent>
@@ -195,6 +204,22 @@ function AccountTab({ email, onDeleted }: { email: string; onDeleted: () => void
         <Button onClick={changePw}>Salvar senha</Button>
       </div>
       <div className="flex gap-2"><Button variant="outline" onClick={signOut}>Sair</Button><Button variant="destructive" onClick={del}>Excluir conta</Button></div>
+    </div>
+  );
+}
+
+function FxPicker({ title, options, value, onChange, disabled, preview }: { title: string; options: FxOption[]; value: string; onChange: (v: string) => void; disabled: boolean; preview: (o: FxOption) => React.ReactNode }) {
+  const all = [{ key: "none", label: "Nenhum" }, ...options];
+  return (
+    <div>
+      <Label>{title} <span className="text-xs text-muted-foreground">({options.length} opções)</span></Label>
+      <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
+        {all.map((o) => (
+          <button key={o.key} type="button" disabled={disabled} onClick={() => onChange(o.key)} className={`min-h-14 rounded-lg border-2 p-2 text-sm disabled:opacity-40 ${value === o.key ? "border-primary" : "border-border"}`}>
+            {o.key === "none" ? "Nenhum" : preview(o)}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

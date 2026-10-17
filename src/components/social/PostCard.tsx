@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Heart, MessageCircle, Flag, Trash2, MoreHorizontal } from "lucide-react";
+import { Heart, MessageCircle, Flag, Trash2, MoreHorizontal, Eye, Pin, PinOff } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -11,7 +11,7 @@ import { Comments } from "./Comments";
 import { cn } from "@/lib/utils";
 
 export type Post = {
-  id: string; content: string | null; created_at: string; author_id: string;
+  id: string; content: string | null; created_at: string; author_id: string; pinned_at?: string | null; views?: number;
   author: MiniUser | null;
   post_media: { id: string; kind: string; url: string }[];
   polls: { id: string; question: string; poll_options: { id: string; label: string; position: number }[]; poll_votes: { option_id: string; user_id: string }[] }[] | { id: string; question: string; poll_options: { id: string; label: string; position: number }[]; poll_votes: { option_id: string; user_id: string }[] } | null;
@@ -20,7 +20,17 @@ export type Post = {
 };
 
 export function PostCard({ post }: { post: Post }) {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, profile } = useAuth();
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = ref.current; if (!el || !user || user.id === post.author_id) return;
+    const k = `seen:${post.id}`;
+    if (sessionStorage.getItem(k)) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (e?.isIntersecting) { sessionStorage.setItem(k, "1"); io.disconnect(); void supabase.rpc("register_post_view", { _post: post.id }); }
+    }, { threshold: 0.5 });
+    io.observe(el); return () => io.disconnect();
+  }, [post.id, post.author_id, user]);
   const qc = useQueryClient();
   const [liked, setLiked] = useState(post.post_likes.some((l) => l.user_id === user?.id));
   const [likes, setLikes] = useState(post.post_likes.length);
@@ -58,6 +68,13 @@ export function PostCard({ post }: { post: Post }) {
     qc.invalidateQueries({ queryKey: ["admin"] });
   };
 
+  const togglePin = async () => {
+    const { error } = await supabase.from("posts").update({ pinned_at: post.pinned_at ? null : new Date().toISOString() }).eq("id", post.id);
+    if (error) return toast.error(error.message.includes("Limite") ? "Você já tem 3 posts fixados" : "Só Premium pode fixar posts");
+    toast.success(post.pinned_at ? "Post desafixado" : "Post fixado no perfil");
+    qc.invalidateQueries({ queryKey: ["feed"] });
+  };
+
   const report = async () => {
     const reason = prompt("Por que você está denunciando esta publicação?");
     if (!reason || !user) return;
@@ -69,7 +86,7 @@ export function PostCard({ post }: { post: Post }) {
   const total = votes.length;
 
   return (
-    <article className="border-b border-border px-4 py-4 transition-colors hover:bg-surface/60 sm:px-5">
+    <article ref={ref} className="border-b border-border px-4 py-4 transition-colors hover:bg-surface/60 sm:px-5">
       <div className="flex gap-3">
         <UserPopover user={a}><Avatar user={a} size={44} /></UserPopover>
         <div className="min-w-0 flex-1">
@@ -83,11 +100,13 @@ export function PostCard({ post }: { post: Post }) {
               <DropdownMenuTrigger className="ml-auto rounded-full p-1 text-muted-foreground hover:bg-muted" aria-label="Opções"><MoreHorizontal size={18} /></DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {user?.id !== post.author_id && <DropdownMenuItem onClick={report}><Flag size={14} className="mr-2" />Denunciar</DropdownMenuItem>}
+                {user?.id === post.author_id && profile?.plan === "premium" && <DropdownMenuItem onClick={togglePin}>{post.pinned_at ? <PinOff size={14} className="mr-2" /> : <Pin size={14} className="mr-2" />}{post.pinned_at ? "Desafixar" : "Fixar no perfil"}</DropdownMenuItem>}
                 {(user?.id === post.author_id || isAdmin) && <DropdownMenuItem onClick={remove} className="text-destructive"><Trash2 size={14} className="mr-2" />Excluir</DropdownMenuItem>}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
 
+          {post.pinned_at && <div className="mt-1 flex items-center gap-1 text-xs font-semibold text-primary"><Pin size={12} /> Fixado</div>}
           {post.content && <p className="mt-1 whitespace-pre-wrap break-words">{post.content}</p>}
 
           {post.post_media.map((m) => (
@@ -123,6 +142,7 @@ export function PostCard({ post }: { post: Post }) {
             <button onClick={() => setShowComments((s) => !s)} className="flex items-center gap-1.5 transition hover:text-primary" aria-label="Comentários">
               <MessageCircle size={18} /> {post.comments?.[0]?.count ?? 0}
             </button>
+            <span className="flex items-center gap-1.5" aria-label="Visualizações"><Eye size={18} /> {post.views ?? 0}</span>
           </div>
           {showComments && <Comments postId={post.id} />}
         </div>

@@ -1,12 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { ExternalLink, Pin, Play, Music } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { PostCard, type Post } from "@/components/social/PostCard";
+import { fxClass } from "@/lib/premium-fx";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { PageHeader } from "@/components/social/AppShell";
 import { Avatar, DisplayName, RelationshipActions, useProfileStats } from "@/components/social/UserBits";
 import { Button } from "@/components/ui/button";
-import { PostList, useFeed } from "./feed";
+import { useFeed } from "./feed";
 
 export const Route = createFileRoute("/_authenticated/u/$username")({
   head: ({ params }) => ({ meta: [{ title: `@${params.username} — NewGen Shitpost` }, { name: "description", content: `Perfil de @${params.username} na NewGen Shitpost.` }, { property: "og:title", content: `@${params.username} — NewGen Shitpost` }, { property: "og:description", content: "Perfil na NewGen Shitpost." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
@@ -34,7 +38,7 @@ function ProfilePage() {
   return (
     <div>
       <PageHeader title={p.display_name} />
-      <div className="h-40 bg-brand sm:h-52" style={p.banner_url ? { backgroundImage: `url(${p.banner_url})`, backgroundSize: "cover", backgroundPosition: "center" } : p.banner_color ? { background: p.banner_color } : undefined} />
+      <div className={`h-40 bg-brand sm:h-52 ${p.plan === "premium" && fxClass("bf", p.banner_frame) ? "bf " + fxClass("bf", p.banner_frame) : ""}`} style={p.banner_url ? { backgroundImage: `url(${p.banner_url})`, backgroundSize: "cover", backgroundPosition: "center" } : p.banner_color ? { background: p.banner_color } : undefined} />
       <div className="px-5 pb-4">
         <div className="-mt-14 flex items-end justify-between">
           <Avatar user={p} size={112} className="ring-4 ring-background" />
@@ -42,7 +46,6 @@ function ProfilePage() {
         </div>
         <div className="mt-3">
           <DisplayName user={p} className="text-2xl" />
-          {p.plan === "premium" && <span className="ml-2 rounded-full bg-brand px-2 py-0.5 text-xs font-bold text-primary-foreground">PREMIUM</span>}
         </div>
         <div className="text-muted-foreground">@{p.username}</div>
         {p.status !== "active" && <div className="mt-2 text-sm font-semibold text-destructive">Conta {p.status === "banned" ? "banida" : "suspensa"}</div>}
@@ -58,7 +61,38 @@ function ProfilePage() {
           ))}
         </div>
       </div>
-      <div className="border-t border-border"><PostList query={feed} /></div>
+      <div className="border-t border-border"><PostGrid query={feed} /></div>
     </div>
+  );
+}
+
+function PostGrid({ query }: { query: ReturnType<typeof useFeed> }) {
+  const [open, setOpen] = useState<Post | null>(null);
+  const posts = query.data?.pages.flat() ?? [];
+  if (query.isLoading) return <p className="p-10 text-center text-muted-foreground">Carregando…</p>;
+  if (!posts.length) return <p className="p-10 text-center text-muted-foreground">Nenhum post ainda.</p>;
+  return (
+    <>
+      <div className="grid grid-cols-3 gap-0.5">
+        {posts.map((post) => {
+          const m = post.post_media[0];
+          return (
+            <button key={post.id} onClick={() => setOpen(post)} className="relative aspect-square overflow-hidden bg-surface text-left" aria-label="Abrir post">
+              {m?.kind === "image" ? <img src={m.url} alt="" loading="lazy" className="h-full w-full object-cover" />
+                : m?.kind === "video" ? <><video src={m.url} preload="metadata" muted className="h-full w-full object-cover" /><Play className="absolute right-2 top-2" size={16} /></>
+                : <div className="flex h-full items-center justify-center p-2 text-center text-xs sm:text-sm">{m?.kind === "audio" && <Music size={14} className="mr-1 shrink-0" />}<span className="line-clamp-5 break-words">{post.content || "Enquete"}</span></div>}
+              {post.pinned_at && <Pin className="absolute left-2 top-2 rounded bg-primary p-0.5 text-primary-foreground" size={18} />}
+            </button>
+          );
+        })}
+      </div>
+      {query.hasNextPage && <div className="p-4 text-center"><Button variant="outline" onClick={() => query.fetchNextPage()} disabled={query.isFetchingNextPage}>Carregar mais</Button></div>}
+      <Dialog open={!!open} onOpenChange={(v) => !v && setOpen(null)}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto p-0">
+          <DialogTitle className="sr-only">Post</DialogTitle>
+          {open && <PostCard post={open} />}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Avatar, DisplayName, UserPopover } from "./UserBits";
 import { ImageCropper } from "./ImageCropper";
 import { cn } from "@/lib/utils";
+import { fxClass } from "@/lib/premium-fx";
 
 export function Comments({ postId }: { postId: string }) {
   const { user } = useAuth();
@@ -18,7 +19,7 @@ export function Comments({ postId }: { postId: string }) {
   const { data: comments = [] } = useQuery({
     queryKey: key,
     queryFn: async () => (await supabase.from("comments")
-      .select("id, content, image_url, created_at, author_id, parent_id, author:profiles!comments_author_id_fkey(id, username, display_name, avatar_url, avatar_border_color, name_effect), comment_likes(user_id)")
+      .select("id, content, image_url, created_at, author_id, parent_id, author:profiles!comments_author_id_fkey(id, username, display_name, avatar_url, avatar_border_color, name_effect, plan, verified, avatar_frame, comment_style), comment_likes(user_id)")
       .eq("post_id", postId).order("created_at")).data ?? [],
   });
   const [text, setText] = useState("");
@@ -61,7 +62,7 @@ export function Comments({ postId }: { postId: string }) {
       <div key={c.id} className={cn("flex gap-2", nested && "ml-9")}>
         <UserPopover user={c.author}><Avatar user={c.author} size={30} /></UserPopover>
         <div className="min-w-0 flex-1">
-          <div className="rounded-xl bg-muted px-3 py-2">
+          <div className={cn("rounded-xl bg-muted px-3 py-2", c.author.plan === "premium" && fxClass("cs", c.author.comment_style))}>
             <UserPopover user={c.author}><DisplayName user={c.author} className="text-sm" /><span className="text-xs text-muted-foreground">@{c.author.username}</span></UserPopover>
             {c.content && <p className="whitespace-pre-wrap break-words text-sm">{c.content}</p>}
             {c.image_url && <img src={c.image_url} alt="" loading="lazy" className="mt-2 max-h-72 rounded-lg" />}

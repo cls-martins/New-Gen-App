@@ -25,7 +25,7 @@ export function useFeed(mode: "all" | "following", authorId?: string) {
     initialPageParam: 0,
     queryFn: async ({ pageParam }) => {
       let q = supabase.from("posts").select(POST_SELECT).eq("removed", false).order("created_at", { ascending: false }).range(pageParam, pageParam + PAGE - 1);
-      if (authorId) q = q.eq("author_id", authorId);
+      if (authorId) q = supabase.from("posts").select(POST_SELECT).eq("removed", false).eq("author_id", authorId).order("pinned_at", { ascending: false, nullsFirst: false }).order("created_at", { ascending: false }).range(pageParam, pageParam + PAGE - 1);
       else if (mode === "following" && user) {
         const { data: f } = await supabase.from("follows").select("following_id").eq("follower_id", user.id);
         q = q.in("author_id", [user.id, ...(f ?? []).map((x) => x.following_id)]);
