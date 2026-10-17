@@ -204,8 +204,9 @@
 /* Banner frames */
 .bf { position: relative; overflow: hidden; }
 .bf::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
-.bf-caution::after { border: 8px solid transparent; border-image: repeating-linear-gradient(45deg, var(--primary) 0 10px, var(--background) 10px 20px) 8; animation: fx-slide 1s linear infinite; }
-.bf-crt::after { background: repeating-linear-gradient(0deg, oklch(0 0 0 / .25) 0 2px, transparent 2px 4px); animation: fx-down 2s linear infinite; }
+.bf-caution::after { border: 8px dashed var(--primary); animation: fx-blink 1.2s steps(1) infinite; }
+.bf-crt::after { bottom: auto; height: 3px; background: oklch(1 0 0 / .25); animation: fx-crt 2.5s linear infinite; }
+@keyframes fx-crt { from { top: 0; } to { top: 100%; } }
 .bf-neonline::after { top: auto; height: 4px; background: var(--primary); box-shadow: 0 0 14px var(--primary); animation: fx-blink 1.5s infinite; }
 .bf-hud::after { border: 3px solid var(--primary); clip-path: polygon(0 0,15% 0,15% 6px,6px 6px,6px 25%,0 25%,0 75%,6px 75%,6px calc(100% - 6px),15% calc(100% - 6px),15% 100%,0 100%,0 0,100% 0,100% 25%,calc(100% - 6px) 25%,calc(100% - 6px) 6px,85% 6px,85% 0,100% 0,100% 100%,85% 100%,85% calc(100% - 6px),calc(100% - 6px) calc(100% - 6px),calc(100% - 6px) 75%,100% 75%); }
 .bf-tape::after { inset: -6px auto auto -20px; width: 90px; height: 26px; background: oklch(0.95 0.05 95 / .7); transform: rotate(-12deg); }
@@ -213,11 +214,11 @@
 .bf-wire::after { top: auto; height: 6px; border-top: 3px dotted var(--muted-foreground); }
 .bf-brutal { box-shadow: 6px 6px 0 var(--primary), 12px 12px 0 var(--foreground); }
 .bf-film::after { border-top: 10px dotted var(--background); border-bottom: 10px dotted var(--background); }
-.bf-grid::after { background: repeating-linear-gradient(0deg, oklch(1 0 0 / .08) 0 1px, transparent 1px 20px), repeating-linear-gradient(90deg, oklch(1 0 0 / .08) 0 1px, transparent 1px 20px); }
+.bf-grid::after { border: 1px dashed oklch(1 0 0 / .35); outline: 1px dashed oklch(1 0 0 / .2); outline-offset: -14px; }
 .bf-laser::after { inset: 0 auto auto 0; width: 10%; height: 3px; background: var(--destructive); box-shadow: 0 0 10px var(--destructive); animation: fx-sweep 2s linear infinite; }
 .bf-stamp::after { border: 6px dotted var(--background); }
 .bf-metal::after { border: 6px solid var(--muted); box-shadow: inset 0 0 0 2px var(--foreground); }
-.bf-eq::after { inset: auto 0 0 0; height: 18px; background: repeating-linear-gradient(90deg, var(--primary) 0 6px, transparent 6px 10px); transform-origin: bottom; animation: fx-eq .8s infinite; }
+.bf-eq::after { inset: auto 0 0 0; height: 16px; border-top: 10px dotted var(--primary); transform-origin: bottom; animation: fx-eq .8s infinite; }
 .bf-double::after { border: 2px solid var(--foreground); outline: 2px solid var(--primary); outline-offset: -8px; }
 
 /* Comment styles (applied to the bubble) */
