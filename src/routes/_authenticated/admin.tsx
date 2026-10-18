@@ -26,10 +26,11 @@ function Admin() {
     <div>
       <PageHeader title="Admin" />
       <Tabs defaultValue="reports" className="p-4">
-        <TabsList><TabsTrigger value="reports">Denúncias</TabsTrigger><TabsTrigger value="users">Perfis</TabsTrigger><TabsTrigger value="ips">IPs bloqueados</TabsTrigger></TabsList>
+        <TabsList><TabsTrigger value="reports">Denúncias</TabsTrigger><TabsTrigger value="users">Perfis</TabsTrigger><TabsTrigger value="ips">IPs bloqueados</TabsTrigger><TabsTrigger value="black">Lista negra</TabsTrigger></TabsList>
         <TabsContent value="reports"><Reports /></TabsContent>
         <TabsContent value="users"><Users /></TabsContent>
         <TabsContent value="ips"><Ips /></TabsContent>
+        <TabsContent value="black"><Blacklist /></TabsContent>
       </Tabs>
     </div>
   );
@@ -90,6 +91,12 @@ function Users() {
     const { error } = await supabase.from("profiles").update(patch).eq("id", id);
     if (error) toast.error("Erro"); else { toast.success("Atualizado"); qc.invalidateQueries({ queryKey: ["admin"] }); }
   };
+  const ban = async (id: string) => {
+    if (!confirm("Banir e bloquear email, telefone e IPs desta conta?")) return;
+    const reason = prompt("Motivo do banimento?") ?? "";
+    const { error } = await supabase.rpc("admin_ban_user", { _uid: id, _reason: reason });
+    if (error) toast.error(error.message); else { toast.success("Conta banida e bloqueada"); qc.invalidateQueries({ queryKey: ["admin"] }); }
+  };
   const block = async (ip: string) => {
     const reason = prompt("Motivo do bloqueio?") ?? "";
     const { error } = await supabase.from("blocked_ips").insert({ ip, reason, blocked_by: user!.id });
@@ -117,7 +124,7 @@ function Users() {
                 <Button size="sm" variant={p.verified ? "secondary" : "default"} onClick={() => set(p.id, { verified: !p.verified })}>{p.verified ? "Remover verificado" : "Verificar conta"}</Button>
                 <Button size="sm" variant="outline" onClick={() => set(p.id, { status: "active" })}>Ativar</Button>
                 <Button size="sm" variant="outline" onClick={() => set(p.id, { status: "suspended" })}>Suspender</Button>
-                <Button size="sm" variant="destructive" onClick={() => confirm("Banir usuário?") && set(p.id, { status: "banned" })}>Banir</Button>
+                <Button size="sm" variant="destructive" onClick={() => ban(p.id)}>Banir total</Button>
               </div>
               <div className="text-sm font-semibold">IPs usados</div>
               {!ips.length && <div className="text-xs text-muted-foreground">Nenhum registro</div>}
@@ -140,6 +147,27 @@ function Ips() {
         <div key={b.ip} className="flex items-center gap-3 border-b border-border py-3 text-sm">
           <code>{b.ip}</code><span className="text-muted-foreground">{b.reason}</span>
           <Button size="sm" variant="outline" className="ml-auto" onClick={async () => { await supabase.from("blocked_ips").delete().eq("ip", b.ip); qc.invalidateQueries({ queryKey: ["admin"] }); }}>Desbloquear</Button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Blacklist() {
+  const qc = useQueryClient();
+  const { data = [] } = useQuery({ queryKey: ["admin", "blacklist"], queryFn: async () => (await supabase.from("blacklist").select("*").order("created_at", { ascending: false })).data ?? [] });
+  const label: Record<string, string> = { email: "Email", phone: "Telefone", ip: "IP" };
+  if (!data.length) return <p className="py-10 text-center text-muted-foreground">Lista negra vazia.</p>;
+  return (
+    <div className="pt-3">
+      {data.map((b) => (
+        <div key={b.id} className="flex flex-wrap items-center gap-3 border-b border-border py-3 text-sm">
+          <span className="rounded bg-muted px-2 py-0.5 text-xs">{label[b.kind] ?? b.kind}</span><code className="break-all">{b.value}</code><span className="text-muted-foreground">{b.reason}</span>
+          <Button size="sm" variant="outline" className="ml-auto" onClick={async () => {
+            await supabase.from("blacklist").delete().eq("id", b.id);
+            if (b.kind === "ip") await supabase.from("blocked_ips").delete().eq("ip", b.value);
+            qc.invalidateQueries({ queryKey: ["admin"] });
+          }}>Remover</Button>
         </div>
       ))}
     </div>

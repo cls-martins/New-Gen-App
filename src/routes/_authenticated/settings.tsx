@@ -1,5 +1,5 @@
 import type { Database } from "@/integrations/supabase/types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
@@ -208,7 +208,7 @@ function AccountTab({ email, onDeleted }: { email: string; onDeleted: () => void
   );
 }
 
-function FxPicker({ title, options, value, onChange, disabled, preview }: { title: string; options: FxOption[]; value: string; onChange: (v: string) => void; disabled: boolean; preview: (o: FxOption) => React.ReactNode }) {
+function FxPicker({ title, options, value, onChange, disabled, preview }: { title: string; options: FxOption[]; value: string; onChange: (v: string) => void; disabled: boolean; preview: (o: FxOption) => ReactNode }) {
   const all = [{ key: "none", label: "Nenhum" }, ...options];
   return (
     <div>
