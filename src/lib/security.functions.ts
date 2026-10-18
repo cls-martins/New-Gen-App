@@ -19,6 +19,19 @@ export const checkIpBlocked = createServerFn({ method: "POST" }).handler(async (
   return { blocked: !!data };
 });
 
+/** Public: is this signup blocked (IP, email or phone on the blacklist)? */
+export const checkSignupBlocked = createServerFn({ method: "POST" })
+  .inputValidator((d: { email: string; phone: string }) => ({ email: String(d.email).slice(0, 320), phone: String(d.phone).slice(0, 40) }))
+  .handler(async ({ data }) => {
+    const ip = clientIp();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const [{ data: ipRow }, { data: listed }] = await Promise.all([
+      supabaseAdmin.from("blocked_ips").select("ip").eq("ip", ip).maybeSingle(),
+      supabaseAdmin.rpc("is_blacklisted", { _email: data.email, _phone: data.phone }),
+    ]);
+    return { blocked: !!ipRow || !!listed };
+  });
+
 /** Authenticated: record the IP of the signed-in user (for admin monitoring). */
 export const recordLoginIp = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

@@ -109,7 +109,8 @@ function Index() {
       </section>
 
       <footer className="border-t-2 border-foreground px-5 py-6 text-center text-sm text-muted-foreground">
-        © NewGen Shitpost — Todos os direitos reservados. Feito com o poder da resenha!
+        <Link to="/planos" className="mb-2 inline-block font-semibold text-primary hover:underline">Ver planos</Link>
+        <div>© NewGen Shitpost — Todos os direitos reservados. Feito com o poder da resenha!</div>
       </footer>
     </div>
   );

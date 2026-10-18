@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { checkIpBlocked } from "@/lib/security.functions";
+import { checkSignupBlocked } from "@/lib/security.functions";
 import { uploadImage } from "@/lib/media";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,15 +35,15 @@ function Register() {
     if (phone.length < 10) return toast.error("Informe um telefone válido com DDD");
     setBusy(true);
     try {
-      const { blocked } = await checkIpBlocked();
-      if (blocked) throw new Error("Cadastro bloqueado nesta rede.");
+      const { blocked } = await checkSignupBlocked({ data: { email: f.email, phone } });
+      if (blocked) throw new Error("Cadastro bloqueado.");
       const { data: free } = await supabase.rpc("username_available", { _u: username });
       if (!free) throw new Error("Esse @ já está em uso");
       const { data, error } = await supabase.auth.signUp({
         email: f.email, password: f.password,
         options: { emailRedirectTo: window.location.origin, data: { username, display_name: f.display_name.trim() || username, phone } },
       });
-      if (error) throw new Error(error.message.includes("registered") ? "Email já cadastrado" : error.message);
+      if (error) throw new Error(error.message.includes("registered") ? "Email já cadastrado" : error.message.toLowerCase().includes("database") ? "Cadastro bloqueado." : error.message);
       if (data.session && avatar && data.user) {
         const url = await uploadImage(data.user.id, avatar.blob, 512);
         await supabase.from("profiles").update({ avatar_url: url }).eq("id", data.user.id);

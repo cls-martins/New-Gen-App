@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { NAME_EFFECTS, AVATAR_FRAMES, BANNER_FRAMES, COMMENT_STYLES } from "@/lib/premium-fx";
 import { useQuery } from "@tanstack/react-query";
 import { Check, Crown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,7 +17,7 @@ function Premium() {
   const { profile } = useAuth();
   const { data: limits = [] } = useQuery({ queryKey: ["limits"], queryFn: async () => (await supabase.from("plan_limits").select("*")).data ?? [] });
   const lim = (p: string) => limits.find((l) => l.plan === p)?.daily_posts;
-  const perks = [`${lim("premium") ?? "Mais"} posts por dia (free: ${lim("free") ?? 6})`, "Links fixados no perfil (Instagram, YouTube, TikTok…)", "Efeitos no nome: gradiente, brilho, fogo, cromado", "Selo Premium no perfil"];
+  const perks = [`${lim("premium") ?? "Mais"} posts por dia (free: ${lim("free") ?? 6})`, "Até 3 posts fixados no perfil", "Banner animado (GIF)", `${NAME_EFFECTS.length} efeitos no nome`, `${AVATAR_FRAMES.length} molduras animadas da foto`, `${BANNER_FRAMES.length} molduras do banner`, `${COMMENT_STYLES.length} estilos de comentário`, "Links no perfil (Instagram, YouTube, TikTok…)", "Selo Premium (coroa)"];
   return (
     <div>
       <PageHeader title="Premium" />
@@ -34,7 +35,8 @@ function Premium() {
             </Button>
           )}
         </div>
-        <p className="mt-4 text-center text-sm text-muted-foreground">O pagamento é combinado pelo WhatsApp. Após confirmação, um admin ativa seu Premium.</p>
+        <p className="mt-4 text-center text-sm"><Link to="/planos" className="text-primary hover:underline">Comparar planos</Link></p>
+        <p className="mt-2 text-center text-sm text-muted-foreground">O pagamento é combinado pelo WhatsApp. Após confirmação, um admin ativa seu Premium.</p>
       </div>
     </div>
   );
