@@ -1,0 +1,4 @@
+- [ ] Fit the signed-in app to the device and keep chat controls visible.
+- [ ] Show Postar only on feed/profile; include Premium in mobile navigation.
+- [ ] Provide an editable, database-enforced daily post limit configuration.
+- [ ] Run focused tests and verify available browser flows.

@@ -22,9 +22,9 @@ function Premium() {
     <div>
       <PageHeader title="Premium" />
       <div className="p-5">
-        <div className="overflow-hidden rounded-2xl bg-brand p-8 text-primary-foreground shadow-glow">
+        <div className="overflow-hidden rounded-lg bg-brand p-4 text-primary-foreground shadow-glow sm:p-8">
           <Crown size={40} />
-          <h2 className="mt-3 font-display text-5xl">NewGen Premium</h2>
+          <h2 className="mt-3 font-display text-3xl sm:text-5xl">NewGen Premium</h2>
           <p className="mt-2 text-primary-foreground/80">Destaque-se na comunidade.</p>
           <ul className="mt-6 space-y-3">{perks.map((p) => <li key={p} className="flex gap-2"><Check className="shrink-0" />{p}</li>)}</ul>
           {profile?.plan === "premium" ? (
@@ -35,6 +35,7 @@ function Premium() {
             </Button>
           )}
         </div>
+        {profile?.plan === "premium" && <Button asChild variant="outline" className="mt-4 w-full"><Link to="/settings">Personalizar meu Premium</Link></Button>}
         <p className="mt-4 text-center text-sm"><Link to="/planos" className="text-primary hover:underline">Comparar planos</Link></p>
         <p className="mt-2 text-center text-sm text-muted-foreground">O pagamento é combinado pelo WhatsApp. Após confirmação, um admin ativa seu Premium.</p>
       </div>

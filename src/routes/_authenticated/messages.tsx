@@ -31,21 +31,22 @@ function Messages() {
     enabled: !!user,
     refetchInterval: 15000,
     queryFn: async () => {
+      if (!user) return [];
       const { data } = await supabase.from("conversations")
         .select(`id, user_a, user_b, bg_a, bg_b, last_message_at, a:profiles!conversations_user_a_fkey(${PROFILE_COLS}), b:profiles!conversations_user_b_fkey(${PROFILE_COLS}), messages(id, sender_id, read_at)`)
         .order("last_message_at", { ascending: false });
       return (data ?? []).map((cv) => ({
         ...cv,
-        other: cv.user_a === user!.id ? cv.b : cv.a,
-        unread: cv.messages.filter((m) => m.sender_id !== user!.id && !m.read_at).length,
+        other: cv.user_a === user.id ? cv.b : cv.a,
+        unread: cv.messages.filter((m) => m.sender_id !== user.id && !m.read_at).length,
       }));
     },
   });
   const active = convs.find((x) => x.id === c);
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] md:h-screen">
-      <div className={cn("w-full border-r border-border md:w-80", active && "hidden md:block")}>
+    <div className="flex h-full min-h-0 min-w-0 overflow-hidden">
+      <div className={cn("min-h-0 w-full overflow-y-auto border-r border-border md:w-64 md:shrink-0 lg:w-80", active && "hidden md:block")}>
         <PageHeader title="Mensagens" />
         {!convs.length && <p className="p-6 text-sm text-muted-foreground">Nenhuma conversa ainda. Vocês precisam se seguir mutuamente — abra o perfil de alguém e toque em "Mensagem".</p>}
         {convs.map((cv) => cv.other && (
@@ -57,8 +58,8 @@ function Messages() {
           </button>
         ))}
       </div>
-      <div className={cn("flex-1", !active && "hidden md:flex md:items-center md:justify-center")}>
-        {active?.other ? <Chat conv={active} other={active.other} /> : <div className="text-center"><div className="font-display text-4xl text-brand">Bora conversar</div><p className="text-muted-foreground">Escolha uma conversa.</p></div>}
+      <div className={cn("min-h-0 min-w-0 flex-1", !active && "hidden md:flex md:items-center md:justify-center")}>
+        {active?.other ? <Chat key={active.id} conv={active} other={active.other} /> : <div className="p-4 text-center"><div className="font-display text-3xl text-brand">Bora conversar</div><p className="text-muted-foreground">Escolha uma conversa.</p></div>}
       </div>
     </div>
   );
@@ -73,6 +74,7 @@ function Chat({ conv, other }: { conv: Conv; other: Other }) {
   const nav = useNavigate();
   const [text, setText] = useState("");
   const bottom = useRef<HTMLDivElement>(null);
+  const messageList = useRef<HTMLDivElement>(null);
   const key = ["msgs", conv.id];
   const isA = conv.user_a === user?.id;
   const bg = (isA ? conv.bg_a : conv.bg_b) || "";
@@ -83,7 +85,7 @@ function Chat({ conv, other }: { conv: Conv; other: Other }) {
   });
   const { data: mutual = true } = useQuery({
     queryKey: ["mutual", user?.id, other.id],
-    queryFn: async () => (await supabase.rpc("is_mutual", { _a: user!.id, _b: other.id })).data ?? false,
+    queryFn: async () => user ? (await supabase.rpc("is_mutual", { _a: user.id, _b: other.id })).data ?? false : false,
   });
 
   useEffect(() => {
@@ -95,7 +97,8 @@ function Chat({ conv, other }: { conv: Conv; other: Other }) {
   }, [conv.id]);
 
   useEffect(() => {
-    bottom.current?.scrollIntoView({ behavior: "smooth" });
+    const list = messageList.current;
+    if (list) list.scrollTop = list.scrollHeight;
     const unread = msgs.filter((m) => m.sender_id !== user?.id && !m.read_at);
     if (unread.length) supabase.from("messages").update({ read_at: new Date().toISOString() }).in("id", unread.map((m) => m.id)).then(() => qc.invalidateQueries({ queryKey: ["convs"] }));
   }, [msgs, user, qc]);
@@ -113,10 +116,10 @@ function Chat({ conv, other }: { conv: Conv; other: Other }) {
   };
 
   return (
-    <div className="flex h-full w-full flex-col">
-      <div className="flex items-center gap-3 border-b border-border px-4 py-3">
-        <button className="md:hidden" onClick={() => nav({ to: "/messages", search: {} })} aria-label="Voltar"><ArrowLeft /></button>
-        <UserPopover user={other}><Avatar user={other} size={36} /><DisplayName user={other} /></UserPopover>
+    <div className="flex h-full min-h-0 w-full min-w-0 flex-col">
+      <div className="flex min-w-0 shrink-0 items-center gap-3 border-b border-border px-4 py-3">
+        <Button size="icon" variant="ghost" className="shrink-0 md:hidden" onClick={() => nav({ to: "/messages", search: {} })} aria-label="Voltar"><ArrowLeft /></Button>
+        <div className="min-w-0 flex-1 overflow-hidden"><UserPopover user={other}><Avatar user={other} size={36} /><DisplayName user={other} className="truncate" /></UserPopover></div>
         <Popover>
           <PopoverTrigger asChild><Button size="icon" variant="ghost" className="ml-auto" aria-label="Fundo da conversa"><Palette size={18} /></Button></PopoverTrigger>
           <PopoverContent className="w-60">
@@ -128,13 +131,13 @@ function Chat({ conv, other }: { conv: Conv; other: Other }) {
           </PopoverContent>
         </Popover>
       </div>
-      <div className="flex-1 space-y-2 overflow-y-auto p-4" style={bg ? { background: bg } : undefined}>
+      <div ref={messageList} className="min-h-0 min-w-0 flex-1 space-y-2 overflow-y-auto overscroll-contain p-4" style={bg ? { background: bg } : undefined}>
         {msgs.map((m) => {
           const mine = m.sender_id === user?.id;
           return (
             <div key={m.id} className={cn("flex", mine ? "justify-end" : "justify-start")}>
               <div className={cn("max-w-[75%] rounded-2xl px-3 py-2 text-sm", mine ? "rounded-br-sm bg-primary text-primary-foreground" : "rounded-bl-sm bg-secondary text-secondary-foreground")}>
-                <p className="whitespace-pre-wrap break-words">{m.content}</p>
+                <p className="whitespace-pre-wrap [overflow-wrap:anywhere]">{m.content}</p>
                 <div className="mt-0.5 flex items-center justify-end gap-1 text-[10px] opacity-70">
                   {new Date(m.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
                   {mine && (m.read_at ? <CheckCheck size={12} /> : <Check size={12} />)}
@@ -146,12 +149,12 @@ function Chat({ conv, other }: { conv: Conv; other: Other }) {
         <div ref={bottom} />
       </div>
       {mutual ? (
-        <form onSubmit={send} className="flex gap-2 border-t border-border p-3">
-          <Input value={text} onChange={(e) => setText(e.target.value)} placeholder="Mensagem…" maxLength={2000} />
-          <Button type="submit" size="icon" aria-label="Enviar"><Send size={18} /></Button>
+        <form onSubmit={send} className="flex shrink-0 gap-2 border-t border-border p-3">
+          <Input className="min-w-0 flex-1" aria-label="Mensagem" value={text} onChange={(e) => setText(e.target.value)} placeholder="Mensagem…" maxLength={2000} />
+          <Button className="shrink-0" type="submit" size="icon" aria-label="Enviar"><Send size={18} /></Button>
         </form>
       ) : (
-        <div className="border-t border-border p-4 text-center text-sm text-muted-foreground">Vocês não se seguem mais mutuamente. A conversa está pausada.</div>
+        <div className="shrink-0 border-t border-border p-4 text-center text-sm text-muted-foreground">Vocês não se seguem mais mutuamente. A conversa está pausada.</div>
       )}
     </div>
   );
