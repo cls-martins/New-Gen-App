@@ -10,3 +10,6 @@
 <!-- LOVABLE:END -->
 
 - Keep the homepage's extra CTA text and URL in `src/lib/homepage.ts` so they can be edited independently of presentation.
+- The authenticated AppShell owns the visible viewport height and mobile safe-area navigation; pages scroll inside main, and chat scrolls only its message list so its send form stays accessible.
+- Keep publishing-location rules and mobile navigation destinations in `src/lib/app-navigation.ts` so chat and other utility screens never inherit an obstructing publishing control.
+- Daily quotas are enforced by the database's `plan_limits` table; edit and execute `supabase/post-limits.sql` to change them, never substitute client-only limits or mutate quotas on page load.
