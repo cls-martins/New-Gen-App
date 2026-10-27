@@ -67,7 +67,7 @@ export function Avatar({
   return frame ? (
     <span
       className={cn(
-        "af inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full",
+        "af inline-flex shrink-0 items-center justify-center rounded-full",
         frame,
         className,
       )}
@@ -404,11 +404,13 @@ function MiniProfile({
   const { data: p } = useQuery({
     queryKey: ["profile-id", id],
     queryFn: async () =>
-      (await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", id)
-        .maybeSingle()).data,
+      (
+        await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", id)
+          .maybeSingle()
+      ).data,
   });
 
   const { data: s } = useProfileStats(id);
