@@ -8,8 +8,8 @@ BEGIN;
 UPDATE public.plan_limits
 SET daily_posts = config.daily_posts
 FROM (VALUES
-  ('free'::public.plan_type, 6),
-  ('premium'::public.plan_type, 30)
+  ('free'::public.plan_type, 7),
+  ('premium'::public.plan_type, 20)
 ) AS config(plan, daily_posts)
 WHERE plan_limits.plan = config.plan;
 COMMIT;
